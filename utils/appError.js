@@ -3,7 +3,7 @@ class appError extends Error {
     super(message);
 
     this.statusCode = statusCode;
-    this.staus = `${statusCode}`.startsWith("4") ? "fail" : "error";
+    this.status = `${statusCode}`.startsWith("4") ? "fail" : "error";
     // is opretionel means errors of authentication and stuf if false it means err in my code
     this.isOperational = true;
 

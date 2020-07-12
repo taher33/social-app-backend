@@ -1,12 +1,30 @@
+const appError = require("../utils/appError");
+
+const handleValdiationErr = err => {
+  return new appError(err.message, 400);
+};
+
+const handleCastErr = err => {
+  const message = `invalide ${err.path}: ${err.value}`;
+  return new appError(message, 400);
+};
+
+const handleDuplicateErr = err => {
+  const value = Object.keys(err.keyValue)[0];
+  const message = ` ${value} alreqdy exists`;
+  return new appError(message, 400);
+};
+
 const sendErrDev = (err, res) => {
   res.status(err.statusCode).json({
     err,
     status: err.status,
     message: err.message,
+    stack: err.stack,
   });
 };
 const sendErrProd = (err, res) => {
-  if (err.isOperationel) {
+  if (err.isOperational) {
     res.status(err.statusCode).json({
       status: err.status,
       message: err.message,
@@ -15,7 +33,6 @@ const sendErrProd = (err, res) => {
     res.json({
       message: "something wrong inside the code a bug",
     });
-    console.error(err);
   }
 };
 
@@ -25,6 +42,11 @@ module.exports = (err, req, res, next) => {
   if (process.env.NODE_ENV === "dev") {
     sendErrDev(err, res);
   } else if (process.env.NODE_ENV === "prod") {
-    sendErrProd(err, res);
+    let error = { ...err };
+    if (error.name === "CastError") error = handleCastErr(error);
+    if (error.code === 11000) error = handleDuplicateErr(error);
+    if (err.message.match("validation failed").length !== 0)
+      error = handleValdiationErr(err);
+    sendErrProd(error, res);
   }
 };
