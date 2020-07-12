@@ -3,24 +3,26 @@ const router = express.Router();
 const User = require("../models/userM");
 const Post = require("../models/postsM");
 const mongoose = require("mongoose");
-const apiFeatures = require("../utils/api-features")
-router.get("/", async (req, res) => {
-  try {
-    const feature = new apiFeatures(Post.find(), req.query).filter().limitFields().sort().pagination()
+const apiFeatures = require("../utils/api-features");
+const handleAsync = require("../utils/handleAsync");
 
-    const posts = await feature.query
+router.get(
+  "/",
+  handleAsync(async (req, res, next) => {
+    const feature = new apiFeatures(Post.find(), req.query)
+      .filter()
+      .limitFields()
+      .sort()
+      .pagination();
+
+    const posts = await feature.query;
 
     res.json({
-      msg: 'this worked',
-      posts
-    })
-  } catch (err) {
-    res.json({
-      err,
-      msg: 'this did not work'
-    })
-  }
-});
+      msg: "this worked",
+      posts,
+    });
+  })
+);
 
 router.post("/", (req, res, next) => {
   // User.find({ name: req.body.name })
@@ -59,15 +61,15 @@ router.post("/", (req, res, next) => {
 
   post
     .save()
-    .then((result) => {
+    .then(result => {
       res.json({
         msg: "this worked there is a new post ",
         result,
       });
     })
-    .catch((err) => {
+    .catch(err => {
       res.json({
-        msg: "from post save in profile.js"
+        msg: "from post save in profile.js",
       });
     });
 });

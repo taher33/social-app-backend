@@ -4,7 +4,7 @@ const userSchema = mongoose.Schema({
   _id: mongoose.Schema.Types.ObjectId,
   name: {
     type: String,
-    unique: true,
+    unique: [true, "name already taken"],
     required: [true, "a name is required"],
     maxLength: [30, "the name must be less then 30 charchters"],
     maxLength: [2, "the name must be more then 2 charchters"],
@@ -13,7 +13,11 @@ const userSchema = mongoose.Schema({
     type: String,
     required: true,
     unique: true,
-    match: /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i,
+    match: [
+      /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i,
+      ,
+      "pls make it a valid email",
+    ],
   },
   password: {
     type: String,

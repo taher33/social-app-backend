@@ -2,56 +2,49 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/userM");
 const mongoose = require("mongoose");
+const handleAsync = require("../utils/handleAsync");
+const appError = require("../utils/appError");
+router.get(
+  "/",
 
-router.get("/", (req, res, next) => {
-  User.find()
-    .exec()
-    .then((users) => {
-      res.status(200).json(users);
-    })
-    .catch((err) => {
-    res.status(403).json({
-        msg2: "note : from signup route",
-        err,
-      });
+  handleAsync(async (req, res, next) => {
+    const users = await User.find();
+    res.status(200).json({
+      status: "got the users succes",
+      number: await User.countDocuments(),
+      result: users,
     });
-});
+  })
+);
 
-router.post("/", (req, res, next) => {
-  const user = new User({
-    _id: new mongoose.Types.ObjectId(),
-    name: req.body.name,
-    email: req.body.email,
-    password: req.body.password,
-  });
-  user
-    .save()
-    .then((result) => {
-      res.status(200).json({
-        msg: "user succesfuly signed up ",
-        msg2: "note : from signup route",
-        result,
-      });
-    })
-    .catch((err) => {
-      res.status(500).json({
-        msg2: "note : from signup route",
-        err,
-      });
+router.post(
+  "/",
+  handleAsync(async (req, res, next) => {
+    const user = await User.create({
+      _id: new mongoose.Types.ObjectId(),
+      name: req.body.name,
+      email: req.body.email,
+      password: req.body.password,
     });
-});
+    res.status(200).json({
+      status: "succes user was created",
+      user,
+    });
+  })
+);
 
-router.delete("/:id", (req, res, next) => {
-  User.remove({ _id: req.params.id })
-    .exec()
-    .then((user) => {
-      res.status(200).json({
-        msg: "user deleted",
-      });
-    })
-    .catch((err) => {
-      res.status(500).json(err);
+router.delete(
+  "/:id",
+  handleAsync(async (req, res, next) => {
+    const user = await User.remove({ _id: req.params.id });
+    if (!user) {
+      return next(new appError("there are no users with this id", 404));
+    }
+    res.status(204).json({
+      status: "success",
+      result: null,
     });
-});
+  })
+);
 
 module.exports = router;
