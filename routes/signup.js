@@ -4,6 +4,10 @@ const User = require("../models/userM");
 const mongoose = require("mongoose");
 const handleAsync = require("../utils/handleAsync");
 const appError = require("../utils/appError");
+const auth = require("../controller/authController");
+
+router.post("/test", auth.login);
+
 router.get(
   "/",
 
@@ -17,21 +21,7 @@ router.get(
   })
 );
 
-router.post(
-  "/",
-  handleAsync(async (req, res, next) => {
-    const user = await User.create({
-      _id: new mongoose.Types.ObjectId(),
-      name: req.body.name,
-      email: req.body.email,
-      password: req.body.password,
-    });
-    res.status(200).json({
-      status: "succes user was created",
-      user,
-    });
-  })
-);
+router.post("/", auth.signUp);
 
 router.delete(
   "/:id",
