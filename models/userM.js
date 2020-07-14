@@ -38,6 +38,7 @@ const userSchema = new mongoose.Schema({
     },
     select: false,
   },
+  passwordChanged: Date,
   images: {
     type: [String],
   },
@@ -58,13 +59,21 @@ const userSchema = new mongoose.Schema({
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
   // hash the password
-  this.password = bcrypt.hash(this.password, 12);
+  this.password = await bcrypt.hash(this.password, 12);
   this.passwordConfirm = undefined;
   next();
 });
-
+// this is not working
 userSchema.methods.checkPassword = async function (candidatePass, userPass) {
   return await bcrypt.compare(candidatePass, userPass);
+};
+
+userSchema.methods.checkPassChanged = async function (tokenDate) {
+  if (this.passwordChanged) {
+    const changedAt = parseInt(this.passwordChanged.getTime() / 1000, 10);
+    return tokenDate < changedAt;
+  }
+  return false;
 };
 
 module.exports = mongoose.model("User", userSchema);

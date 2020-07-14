@@ -5,9 +5,11 @@ const Post = require("../models/postsM");
 const mongoose = require("mongoose");
 const apiFeatures = require("../utils/api-features");
 const handleAsync = require("../utils/handleAsync");
+const { protect } = require("../controller/authController");
 
 router.get(
   "/",
+  protect,
   handleAsync(async (req, res, next) => {
     const feature = new apiFeatures(Post.find(), req.query)
       .filter()

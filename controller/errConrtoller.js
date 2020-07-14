@@ -23,6 +23,9 @@ const sendErrDev = (err, res) => {
     stack: err.stack,
   });
 };
+
+const hendleJWTerr = () => new appError("plz login again", 401);
+
 const sendErrProd = (err, res) => {
   if (err.isOperational) {
     res.status(err.statusCode).json({
@@ -45,8 +48,10 @@ module.exports = (err, req, res, next) => {
     let error = { ...err };
     if (error.name === "CastError") error = handleCastErr(error);
     if (error.code === 11000) error = handleDuplicateErr(error);
-    if (err.message.match("validation failed").length !== 0)
+    if (!err.message.match("validation failed"))
       error = handleValdiationErr(err);
+    if (err.name === "JsonWebTokenError") error = hendleJWTerr();
+    if (err.name === "TokenExpiredError") error = hendleJWTerr();
     sendErrProd(error, res);
   }
 };
