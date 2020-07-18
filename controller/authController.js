@@ -16,6 +16,7 @@ exports.signUp = handleasync(async (req, res, next) => {
     email: req.body.email,
     password: req.body.password,
     passwordConfirm: req.body.passwordConf,
+    role: req.body.role,
   });
 
   const token = signToken(newUser._id);
@@ -79,4 +80,28 @@ exports.protect = handleasync(async (req, res, next) => {
   }
   req.user = frechUser;
   next();
+});
+
+exports.restricTo = (...roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.role)) {
+      console.log(req.user.role);
+      return next(new appError("you are not authorized", 403));
+    }
+    next();
+  };
+};
+
+exports.forgotPass = handleasync(async (req, res, next) => {
+  const user = await User.findOne({ email: req.body.email });
+  if (!user) {
+    return next(new appError("user not found", 404));
+  }
+
+  const resetToken = user.resetToken();
+  await user.save({ validateBeforeSave: false });
+  res.json({
+    result: "success",
+    user,
+  });
 });

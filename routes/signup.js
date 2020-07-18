@@ -23,14 +23,18 @@ router.get(
 
 router.post("/", auth.signUp);
 
+router.post("/forgotPassword", auth.forgotPass);
+
 router.delete(
   "/:id",
+  auth.protect,
+  auth.restricTo("admin"),
   handleAsync(async (req, res, next) => {
-    const user = await User.remove({ _id: req.params.id });
-    if (!user) {
+    const user = await User.deleteOne({ _id: req.params.id });
+    if (user.deletedCount === 0) {
       return next(new appError("there are no users with this id", 404));
     }
-    res.status(204).json({
+    res.status(200).json({
       status: "success",
       result: null,
     });

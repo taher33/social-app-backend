@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const validate = require("validator");
 const bcrypt = require("bcryptjs");
+const crypto = require("crypto");
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -14,11 +15,6 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true,
-    // match: [
-    //   /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i,
-    //   ,
-    //   "pls make it a valid email",
-    // ],
     lowercase: true,
     validate: [validate.isEmail, "please provide valid email"],
   },
@@ -42,6 +38,7 @@ const userSchema = new mongoose.Schema({
   images: {
     type: [String],
   },
+  role: { type: String, enum: ["user", "admin", "mod"], default: "user" },
   profileImg: {
     type: String,
     default: "profile-imgs/default-img.png",
@@ -54,6 +51,8 @@ const userSchema = new mongoose.Schema({
     type: Date,
     default: Date.now(),
   },
+  passwordResetToken: String,
+  passwordResetTime: Date,
 });
 
 userSchema.pre("save", async function (next) {
@@ -74,6 +73,18 @@ userSchema.methods.checkPassChanged = async function (tokenDate) {
     return tokenDate < changedAt;
   }
   return false;
+};
+
+userSchema.methods.resetToken = function () {
+  const resetToken = crypto.randomBytes(32).toString("hex");
+
+  this.passwordResetToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+
+  this.passwordResetTime = Date.now() + 30 * 60 * 1000;
+  return resetToken;
 };
 
 module.exports = mongoose.model("User", userSchema);
