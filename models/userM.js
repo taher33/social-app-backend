@@ -62,6 +62,14 @@ userSchema.pre("save", async function (next) {
   this.passwordConfirm = undefined;
   next();
 });
+
+userSchema.pre("save", function (next) {
+  if (!this.isModified("password") || this.isNew) return next();
+  // some times the DB is slower then the jwt token so we take one seconde to not run into problemes in login
+  this.passwordChanged = Date.now() - 1000;
+  next();
+});
+
 // this is not working
 userSchema.methods.checkPassword = async function (candidatePass, userPass) {
   return await bcrypt.compare(candidatePass, userPass);

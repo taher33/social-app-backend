@@ -1,9 +1,11 @@
+const crypto = require("crypto");
 const User = require("../models/userM");
 const { promisify } = require("util");
 const handleasync = require("../utils/handleAsync");
 const jwt = require("jsonwebtoken");
 const appError = require("../utils/appError");
 const { checkPassword } = require("../utils/comparePass");
+const sendMail = require("../utils/email");
 const signToken = id => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
@@ -100,8 +102,78 @@ exports.forgotPass = handleasync(async (req, res, next) => {
 
   const resetToken = user.resetToken();
   await user.save({ validateBeforeSave: false });
-  res.json({
-    result: "success",
+
+  const resetUrl = `${req.protocol}://${req.get(
+    "host"
+  )}/signup/resetPassword/${resetToken}`;
+
+  const message = `forgot your passwordd ? change your password here : ${resetUrl}`;
+
+  try {
+    await sendMail({
+      email: user.email,
+      message,
+      subject: "this is valide for only 30 min",
+    });
+    res.status(200).json({
+      status: "success",
+      message: "verify your email",
+    });
+  } catch (err) {
+    user.passwordResetToken = undefined;
+    user.passwordResetTime = undefined;
+    await user.save({ validateBeforeSave: false });
+
+    return next(
+      new appError("there was an err sending the email, try again later")
+    );
+  }
+});
+
+exports.resetPassword = handleasync(async (req, res, next) => {
+  const hashToken = crypto
+    .createHash("sha256")
+    .update(req.params.token)
+    .digest("hex");
+
+  const user = await User.findOne({
+    passwordResetToken: hashToken,
+    passwordResetTime: { $gt: Date.now() },
+  });
+  if (!user) {
+    return next(new appError("false token or expired token", 400));
+  }
+
+  user.password = req.body.password;
+  user.passwordConfirm = req.body.passwordConf;
+  user.passwordResetToken = undefined;
+  user.passwordResetTime = undefined;
+  await user.save();
+
+  const token = signToken(user._id);
+
+  res.status(201).json({
+    status: "success",
+    token,
     user,
   });
 });
+
+exports.updatePassword = async (req, res, next) => {
+  const user = await User.findOne({ _id: req.user._id }).select("+password");
+  console.log(user);
+  if (!(await checkPassword(req.body.password, user.password))) {
+    return next(new appError("wrong password , plz try again "));
+  }
+
+  user.password = req.body.newPassword;
+  user.passwordConfirm = req.body.newPasswordConf;
+  await user.save();
+  const token = signToken(user._id);
+
+  res.status(201).json({
+    status: "success",
+    token,
+    user,
+  });
+};

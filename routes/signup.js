@@ -24,6 +24,9 @@ router.get(
 router.post("/", auth.signUp);
 
 router.post("/forgotPassword", auth.forgotPass);
+router.patch("/resetPassword/:token", auth.resetPassword);
+
+router.patch("/updatePassword", auth.protect, auth.updatePassword);
 
 router.delete(
   "/:id",
