@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 const handleAsync = require("../utils/handleAsync");
 const appError = require("../utils/appError");
 const auth = require("../controller/authController");
+const { updateMe, deleteMe } = require("../controller/userController");
 
 router.post("/test", auth.login);
 
@@ -27,6 +28,10 @@ router.post("/forgotPassword", auth.forgotPass);
 router.patch("/resetPassword/:token", auth.resetPassword);
 
 router.patch("/updatePassword", auth.protect, auth.updatePassword);
+
+router.patch("/updateMe", auth.protect, updateMe);
+
+router.delete("/deleteMe", auth.protect, deleteMe);
 
 router.delete(
   "/:id",

@@ -53,6 +53,11 @@ const userSchema = new mongoose.Schema({
   },
   passwordResetToken: String,
   passwordResetTime: Date,
+  active: {
+    type: Boolean,
+    default: true,
+    select: false,
+  },
 });
 
 userSchema.pre("save", async function (next) {
@@ -67,6 +72,11 @@ userSchema.pre("save", function (next) {
   if (!this.isModified("password") || this.isNew) return next();
   // some times the DB is slower then the jwt token so we take one seconde to not run into problemes in login
   this.passwordChanged = Date.now() - 1000;
+  next();
+});
+
+userSchema.pre(/^find/, function (next) {
+  this.find({ active: { $ne: false } });
   next();
 });
 
