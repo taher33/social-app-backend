@@ -7,7 +7,7 @@ const appError = require("../utils/appError");
 const auth = require("../controller/authController");
 const { updateMe, deleteMe } = require("../controller/userController");
 
-router.post("/test", auth.login);
+router.post("/login", auth.login);
 
 router.get(
   "/",

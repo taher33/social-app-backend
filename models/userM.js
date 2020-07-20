@@ -58,6 +58,8 @@ const userSchema = new mongoose.Schema({
     default: true,
     select: false,
   },
+
+  posts: [{ type: mongoose.SchemaTypes.ObjectId, ref: "Post" }],
 });
 
 userSchema.pre("save", async function (next) {
@@ -77,6 +79,11 @@ userSchema.pre("save", function (next) {
 
 userSchema.pre(/^find/, function (next) {
   this.find({ active: { $ne: false } });
+  next();
+});
+
+userSchema.pre(/^find/, function (next) {
+  this.populate("posts");
   next();
 });
 

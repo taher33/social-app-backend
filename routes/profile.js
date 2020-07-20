@@ -1,11 +1,13 @@
 const express = require("express");
 const router = express.Router();
-const User = require("../models/userM");
 const Post = require("../models/postsM");
 const mongoose = require("mongoose");
 const apiFeatures = require("../utils/api-features");
 const handleAsync = require("../utils/handleAsync");
 const { protect } = require("../controller/authController");
+const comment = require("./comment");
+
+router.use("/:postId/comment", comment);
 
 router.get(
   "/",
@@ -27,33 +29,6 @@ router.get(
 );
 
 router.post("/", (req, res, next) => {
-  // User.find({ name: req.body.name })
-  //   .exec()
-  //   .then((name) => {
-  //     if (name.length !== 0) {
-  //       const post = new Post({
-  //         _id: new mongoose.Types.ObjectId(),
-  //         name: name,
-  //         text: req.body.text,
-  //       });
-
-  //       post
-  //         .save()
-  //         .then((result) => {
-  //           res.json({
-  //             msg: "this worked there is a new post ",
-  //             result,
-  //           });
-  //         })
-  //         .catch((err) => {
-  //           res.json({ err, msg: "from post save in profile.js" });
-  //         });
-  //     } else {
-  //       res.json({
-  //         msg: "plz register",
-  //       });
-  //     }
-  //   });
   const post = new Post({
     _id: new mongoose.Types.ObjectId(),
     name: req.body.name,
