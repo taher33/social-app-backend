@@ -6,6 +6,7 @@ const handleAsync = require("../utils/handleAsync");
 const appError = require("../utils/appError");
 const auth = require("../controller/authController");
 const { updateMe, deleteMe } = require("../controller/userController");
+const { deleteOne } = require("../controller/handlerFactory");
 
 router.post("/login", auth.login);
 
@@ -33,20 +34,6 @@ router.patch("/updateMe", auth.protect, updateMe);
 
 router.delete("/deleteMe", auth.protect, deleteMe);
 
-router.delete(
-  "/:id",
-  auth.protect,
-  auth.restricTo("admin"),
-  handleAsync(async (req, res, next) => {
-    const user = await User.deleteOne({ _id: req.params.id });
-    if (user.deletedCount === 0) {
-      return next(new appError("there are no users with this id", 404));
-    }
-    res.status(200).json({
-      status: "success",
-      result: null,
-    });
-  })
-);
+router.delete("/:id", auth.protect, auth.restricTo("admin"), deleteOne(User));
 
 module.exports = router;

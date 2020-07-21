@@ -1,5 +1,6 @@
 const Comment = require("../models/commentsM");
 const handleasync = require("../utils/handleAsync");
+const { deleteOne } = require("./handlerFactory");
 
 exports.getAllComments = handleasync(async (req, res, next) => {
   let filter = {};
@@ -28,10 +29,4 @@ exports.createComment = handleasync(async (req, res, next) => {
   });
 });
 
-exports.deleteComment = handleasync(async (req, res, next) => {
-  await Comment.findByIdAndDelete(req.body.id);
-
-  res.status(204).json({
-    status: "success",
-  });
-});
+exports.deleteComment = deleteOne(Comment);
