@@ -1,20 +1,23 @@
 const mongoose = require("mongoose");
 const slugify = require("slugify");
+const { create } = require("./userM");
 
 const postSchema = mongoose.Schema(
   {
-    _id: mongoose.Schema.Types.ObjectId,
-    name: {
-      type: String,
-      required: true,
-    },
     text: {
       type: String,
+      required: [true, "can not be empty for now"],
     },
+
+    user: { type: mongoose.SchemaTypes.ObjectId, required: true, ref: "User" },
     likes: {
       type: Number,
+      default: 0,
     },
+    photo: [String],
     slug: String,
+    createdAt: { type: Date },
+    modifiedAt: { type: Date },
   },
   {
     toJSON: {
@@ -30,6 +33,8 @@ postSchema.pre("save", function (next) {
   this.slug = slugify(this.name, {
     lower: true,
   });
+  if (this.isNew) this.createdAt = Date.now();
+  else this.modifiedAt = Date.now();
   next();
 });
 

@@ -1,10 +1,9 @@
 const express = require("express");
 const appError = require("./utils/appError");
 const bodyParser = require("body-parser");
-const Users = require("./routes/users");
-const Signup = require("./routes/signup");
+const users = require("./routes/users");
 const cors = require("cors");
-const Profile = require("./routes/profile");
+const posts = require("./routes/posts");
 const rateLimit = require("express-rate-limit");
 const morgan = require("morgan");
 const errHandler = require("./controller/errConrtoller");
@@ -49,9 +48,8 @@ app.use(cors());
 // static serving
 app.use("/images", express.static("profile-imgss"));
 //my routes
-app.use("/users", Users);
-app.use("/profile", Profile);
-app.use("/signup", Signup);
+app.use("/posts", posts);
+app.use("/users", users);
 // not found
 app.all("*", (req, res, next) => {
   next(new appError(`cant find ${req.originalUrl} on this server`, 404));

@@ -1,4 +1,3 @@
-const express = require("express");
 const User = require("../models/userM");
 const appError = require("../utils/appError");
 const handleasync = require("../utils/handleAsync");
@@ -34,5 +33,14 @@ exports.deleteMe = handleasync(async (req, res, next) => {
 
   res.status(204).json({
     status: "seccuss",
+  });
+});
+
+exports.getAllUsers = handleAsync(async (req, res, next) => {
+  const users = await User.find();
+  res.status(200).json({
+    status: "got the users succes",
+    number: await User.countDocuments(),
+    result: users,
   });
 });
