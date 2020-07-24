@@ -36,11 +36,42 @@ exports.deleteMe = handleasync(async (req, res, next) => {
   });
 });
 
-exports.getAllUsers = handleAsync(async (req, res, next) => {
+exports.getAllUsers = handleasync(async (req, res, next) => {
   const users = await User.find();
   res.status(200).json({
     status: "got the users succes",
     number: await User.countDocuments(),
     result: users,
+  });
+});
+
+exports.addFriends = handleasync(async (req, res, next) => {
+  if (!req.body.email) return next(new appError("email required"), 400);
+
+  const user = await User.findOne({ email: req.body.email });
+
+  if (!user) return next(new appError("user does not exist", 404));
+
+  if (user.friends.includes(req.user._id))
+    return next(new appError("u are already friends", 400));
+
+  user.friends.push(req.user._id);
+  req.user.friends.push(user._id);
+  user.save();
+  req.user.save();
+
+  res.status(201).json({
+    status: "success",
+    friends: user.friends,
+    op: req.user,
+  });
+});
+// testing
+exports.getAllFriends = handleasync(async (req, res, next) => {
+  const friends = await User.find({ _id: req.user.friends });
+
+  res.json({
+    status: "seccuss",
+    friends,
   });
 });

@@ -43,6 +43,9 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: "profile-imgs/default-img.png",
   },
+  friends: [mongoose.Types.ObjectId],
+  follow: [{ type: mongoose.SchemaTypes.ObjectId, ref: "User" }],
+  following: [{ type: mongoose.SchemaTypes.ObjectId, ref: "User" }],
   createdAt: {
     type: Date,
   },
