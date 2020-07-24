@@ -66,6 +66,22 @@ exports.addFriends = handleasync(async (req, res, next) => {
     op: req.user,
   });
 });
+// did not add the end point for it yet
+exports.Unfriend = handleasync(async (req, res, next) => {
+  if (!req.body.id) return next(new appError("plz provide an id", 400));
+
+  if (!req.user.friends.includes(req.body.id))
+    return next(new appError("user was not found", 404));
+
+  // removing the id from the friends array
+  const index = req.user.friends.indexOf(req.body.id);
+  req.user.friends.splice(index, 1);
+
+  res.status(204).json({
+    status: "success",
+  });
+});
+
 // testing
 exports.getAllFriends = handleasync(async (req, res, next) => {
   const friends = await User.find({ _id: req.user.friends });
