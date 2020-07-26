@@ -41,7 +41,7 @@ const userSchema = new mongoose.Schema({
   role: { type: String, enum: ["user", "admin", "mod"], default: "user" },
   profileImg: {
     type: String,
-    default: "profile-imgs/default-img.png",
+    default: "default-img.png",
   },
   friends: [mongoose.Types.ObjectId],
   follow: [{ type: mongoose.SchemaTypes.ObjectId, ref: "User" }],

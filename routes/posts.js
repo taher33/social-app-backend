@@ -1,7 +1,5 @@
 const express = require("express");
 const router = express.Router();
-const Post = require("../models/postsM");
-const mongoose = require("mongoose");
 const { protect } = require("../controller/authController");
 const comment = require("./comment");
 const { getPosts, createPost } = require("../controller/postController");

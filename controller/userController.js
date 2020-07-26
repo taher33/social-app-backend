@@ -2,6 +2,33 @@ const User = require("../models/userM");
 const appError = require("../utils/appError");
 const handleasync = require("../utils/handleAsync");
 const { findByIdAndUpdate } = require("../models/userM");
+const multer = require("multer");
+
+const multerStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "profile-imgs");
+  },
+  filename: (req, file, cb) => {
+    //geting the extention jpeg and such
+    const ext = file.mimetype.split("/")[1];
+    cb(null, `user-${req.user._id}-${Date.now()}.${ext}`);
+  },
+});
+
+const multerFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith("image")) {
+    cb(null, true);
+  } else {
+    cb(new appError("not an image", 400), false);
+  }
+};
+
+const upload = multer({
+  storage: multerStorage,
+  fileFilter: multerFilter,
+});
+
+exports.uploadUserImgs = upload.single("photo");
 
 const filterObj = (obj, ...allowed) => {
   const filterdObj = {};
@@ -17,13 +44,16 @@ exports.updateMe = handleasync(async (req, res, next) => {
   }
   const filterdBody = filterObj(req.body, "name", "email");
 
+  if (req.file) filterdBody.profileImg = req.file.filename;
+
   const user = await User.findByIdAndUpdate(req.user._id, filterdBody, {
     new: true,
     runValidators: true,
+    useFindAndModify: false,
   });
 
   res.status(200).json({
-    status: "seccuss",
+    status: "success",
     user,
   });
 });
