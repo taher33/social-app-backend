@@ -11,6 +11,8 @@ const helmet = require("helmet");
 const mongoSanitize = require("express-mongo-sanitize");
 const xss = require("xss-clean");
 const hpp = require("hpp");
+const path = require("path");
+const pages = require("./routes/pages");
 
 const app = express();
 // security headers against noSQL injection
@@ -46,9 +48,10 @@ app.use(bodyParser.json());
 
 app.use(cors());
 // static serving
-app.use("/images", express.static("profile-imgss"));
+app.use(express.static(path.join(__dirname, "imgs")));
 //my routes
 app.use("/posts", posts);
+app.use("/pages", pages);
 app.use("/users", users);
 // not found
 app.all("*", (req, res, next) => {

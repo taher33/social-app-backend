@@ -22,6 +22,7 @@ exports.createPost = handleasync(async (req, res, next) => {
   const newpost = Post.create({
     text: req.body.content,
     user: req.body.poster,
+    page: req.params.pageId,
   });
 
   res.status(201).json({

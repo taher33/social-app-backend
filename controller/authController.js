@@ -95,7 +95,6 @@ exports.protect = handleasync(async (req, res, next) => {
 exports.restricTo = (...roles) => {
   return (req, res, next) => {
     if (!roles.includes(req.user.role)) {
-      console.log(req.user.role);
       return next(new appError("you are not authorized", 403));
     }
     next();

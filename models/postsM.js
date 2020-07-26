@@ -1,8 +1,7 @@
 const mongoose = require("mongoose");
 const slugify = require("slugify");
-const { create } = require("./userM");
 
-const postSchema = mongoose.Schema(
+const postSchema = new mongoose.Schema(
   {
     text: {
       type: String,
@@ -18,6 +17,7 @@ const postSchema = mongoose.Schema(
     slug: String,
     createdAt: { type: Date },
     modifiedAt: { type: Date },
+    page: { type: mongoose.SchemaTypes.ObjectId, ref: "Page" },
   },
   {
     toJSON: {
