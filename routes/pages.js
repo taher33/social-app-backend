@@ -8,17 +8,19 @@ const {
   followPages,
   checkIfAdmin,
   restrictPagePosters,
+  deletePage,
 } = require("../controller/pageController");
 const { createPost } = require("../controller/postController");
-// need to test if the posting works
+
 router.use(protect);
-router.use(checkIfAdmin);
+
 router.route("/").get(getAllPages).post(createPages);
 
 router
-  .route("/:postId")
+  .route("/:pageId")
   .get(getOnePage)
-  .post(restrictPagePosters, createPost)
-  .patch(followPages);
+  .post(checkIfAdmin, restrictPagePosters, createPost)
+  .patch(followPages)
+  .delete(checkIfAdmin, restrictPagePosters, deletePage);
 
 module.exports = router;

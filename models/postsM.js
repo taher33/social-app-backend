@@ -30,9 +30,9 @@ const postSchema = new mongoose.Schema(
 );
 
 postSchema.pre("save", function (next) {
-  this.slug = slugify(this.name, {
-    lower: true,
-  });
+  // this.slug = slugify(this.user, {
+  //   lower: true,
+  // });
   if (this.isNew) this.createdAt = Date.now();
   else this.modifiedAt = Date.now();
   next();

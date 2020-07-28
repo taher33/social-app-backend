@@ -1,5 +1,6 @@
 const handleasync = require("../utils/handleAsync");
 const Page = require("../models/pagesM");
+const Post = require("../models/postsM");
 const appError = require("../utils/appError");
 
 exports.createPages = handleasync(async (req, res, next) => {
@@ -25,9 +26,13 @@ exports.getAllPages = handleasync(async (req, res, next) => {
 exports.getOnePage = handleasync(async (req, res, next) => {
   const page = await Page.findById(req.params.pageId);
   if (!page) return next(new appError("page not found", 404));
+  const pagePosts = await Post.find({ page: req.params.pageId });
+
   res.json({
     status: "success",
     page,
+    postsNum: pagePosts.length,
+    pagePosts,
   });
 });
 
@@ -63,8 +68,16 @@ exports.restrictPagePosters = (req, res, next) => {
 
 exports.checkIfAdmin = async (req, res, next) => {
   const page = await Page.findById(req.params.pageId);
-
-  if (!page.admins.includes(req.user._id)) req.isAdmin = false;
-
+  console.log(page);
+  req.isAdmin = true;
+  if (!page || !page.admins.includes(req.user._id)) req.isAdmin = false;
   next();
 };
+
+exports.deletePage = handleasync(async (req, res, next) => {
+  Page.deleteOne({ _id: req.params.pageId });
+  res.status(204).json({
+    status: "success",
+    msg: "page is deleted",
+  });
+});

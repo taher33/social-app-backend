@@ -19,9 +19,9 @@ exports.getPosts = handleasync(async (req, res, next) => {
 });
 
 exports.createPost = handleasync(async (req, res, next) => {
-  const newpost = Post.create({
+  const newpost = await Post.create({
     text: req.body.content,
-    user: req.body.poster,
+    user: req.user._id,
     page: req.params.pageId,
   });
 
