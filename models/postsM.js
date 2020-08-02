@@ -18,6 +18,7 @@ const postSchema = new mongoose.Schema(
     createdAt: { type: Date },
     modifiedAt: { type: Date },
     page: { type: mongoose.SchemaTypes.ObjectId, ref: "Page" },
+    allowed: Boolean,
   },
   {
     toJSON: {
@@ -52,5 +53,11 @@ postSchema.virtual("comments", {
 postSchema.virtual("likesInK").get(function () {
   return this.likes / 1000 + "k";
 });
+
+postSchema.methods.allow = function (id) {
+  if (id === this.user) this.allowed = true;
+  else this.allowed = false;
+  console.log(this);
+};
 
 module.exports = mongoose.model("Post", postSchema);

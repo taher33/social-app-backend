@@ -68,6 +68,7 @@ exports.deleteMe = handleasync(async (req, res, next) => {
 
 exports.getAllUsers = handleasync(async (req, res, next) => {
   const users = await User.find();
+
   res.status(200).json({
     status: "got the users succes",
     number: await User.countDocuments(),

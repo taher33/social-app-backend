@@ -14,6 +14,7 @@ exports.getAllComments = handleasync(async (req, res, next) => {
   });
 });
 
+//create comments
 exports.createComment = handleasync(async (req, res, next) => {
   if (!req.body.commenter) req.body.commenter = req.user._id;
   if (!req.body.post) req.body.post = req.params.postId;
@@ -26,6 +27,22 @@ exports.createComment = handleasync(async (req, res, next) => {
   res.status(201).json({
     status: "success",
     newComment,
+  });
+});
+
+//liking comments
+
+exports.likeComment = handleasync(async (req, res, next) => {
+  const id = req.params.commentId || req.body.id;
+
+  const comment = await Comment.findById(id);
+
+  comment.likes = comment.likes * 1 + 1;
+
+  comment.save({ validateBeforeSave: false });
+
+  res.json({
+    status: "success",
   });
 });
 

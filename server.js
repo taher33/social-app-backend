@@ -8,6 +8,7 @@ const dotenv = require("dotenv").config({
 });
 const app = require("./app");
 const mongoose = require("mongoose");
+
 const PORT = process.env.PORT || 5000;
 
 mongoose.connect(
@@ -22,9 +23,9 @@ mongoose.connect(
   }
 );
 
-const server = app.listen(PORT, () => {
-  console.log("port : " + PORT);
-});
+const server = app.listen(PORT, () =>
+  console.log("started server on port : " + PORT)
+);
 
 process.on("unhandledRejection", err => {
   console.log(err.name, err.message);
