@@ -37,7 +37,7 @@ exports.signUp = handleasync(async (req, res, next) => {
     email: req.body.email,
     password: req.body.password,
     passwordConfirm: req.body.passwordConf,
-    role: req.body.role,
+    // role: req.body.role,
   });
 
   createSendToken(newUser, 200, res);
