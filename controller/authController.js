@@ -16,18 +16,17 @@ const signToken = id => {
 const createSendToken = (user, statusCode, res) => {
   const token = signToken(user._id);
   const cookieOptions = {
-    expires: new Date(Date.now + process.env.JWT_COOKIE_IN * 3600),
-
+    // expires: new Date(Date.now() + process.env.JWT_COOKIE_IN * 3600),
+    maxAge: 999999999999,
     httpOnly: true,
   };
-
   if (process.env.NODE_ENV === "prod") cookieOptions.secure = true;
+  console.log(cookieOptions);
 
   res.cookie("jwt", token, cookieOptions);
 
-  res.status(statusCode).json({
+  res.status(200).json({
     status: "success",
-    token,
   });
 };
 
@@ -45,7 +44,7 @@ exports.signUp = handleasync(async (req, res, next) => {
 
 exports.login = handleasync(async (req, res, next) => {
   const { email, password } = req.body;
-
+  console.log(req.body);
   if (!email || !password) {
     return next(new appError("plz provide email and password", 400));
   }

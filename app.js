@@ -13,8 +13,15 @@ const xss = require("xss-clean");
 const hpp = require("hpp");
 const path = require("path");
 const pages = require("./routes/pages");
+const cookieParser = require("cookie-parser");
 
 const app = express();
+app.use(
+  cors({
+    credentials: true,
+    origin: "http://localhost:3000",
+  })
+);
 // security headers against noSQL injection
 app.use(helmet());
 //data sanitazation
@@ -29,6 +36,7 @@ const limiter = rateLimit({
   message: "too many request from this ip , plz try again later",
 });
 app.use(limiter);
+app.use(cookieParser());
 // body parser
 app.use(
   bodyParser.urlencoded({
@@ -46,7 +54,6 @@ app.use(hpp());
 
 app.use(bodyParser.json());
 
-app.use(cors());
 // static serving
 app.use(express.static(path.join(__dirname, "imgs")));
 //my routes
