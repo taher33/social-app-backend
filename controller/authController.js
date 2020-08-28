@@ -63,24 +63,20 @@ exports.login = handleasync(async (req, res, next) => {
 
 exports.protect = handleasync(async (req, res, next) => {
   let token;
-
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith("Bearer")
-  ) {
-    token = req.headers.authorization.split(" ")[1];
+  console.log(req.cookies.jwt);
+  if (req.cookies.jwt) {
+    token = req.cookies.jwt;
   }
   if (!token) {
     return next(new appError("plz login first", 401));
   }
 
-  // jwt.verify(token, process.env.JWT_SECRET, (err, result) => {
-  //   console.log(result);
-  // });
+  jwt.verify(token, process.env.JWT_SECRET, (err, result) => {
+    console.log(result);
+  });
   const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
 
   const frechUser = await User.findById(decoded.id);
-  //needs testing
   if (!frechUser) {
     return next(new appError("user does not existe", 401));
   }
