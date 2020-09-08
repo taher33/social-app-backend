@@ -5,17 +5,23 @@ const appError = require("../utils/appError");
 const { deleteOne } = require("./handlerFactory");
 
 exports.getPosts = handleasync(async (req, res, next) => {
-  const feature = new apiFeatures(Post.find(), req.query)
+  if (req.query.user === "me") {
+    req.query.user = req.user._id;
+  }
+  const feature = new apiFeatures(Post.find(), req.query, req.user)
     .filter()
     .limitFields()
     .sort()
     .pagination();
-
   const posts = await feature.query;
-
+  console.log(req.query);
+  //for testing
+  // const posts = await Post.find();
   res.json({
     msg: "this worked",
+    res: posts.length,
     posts,
+    user: req.user,
   });
 });
 

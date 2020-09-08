@@ -35,7 +35,7 @@ const limiter = rateLimit({
   windowMs: 60 * 60 * 1000,
   message: "too many request from this ip , plz try again later",
 });
-app.use(limiter);
+// app.use(limiter);
 app.use(cookieParser());
 // body parser
 app.use(

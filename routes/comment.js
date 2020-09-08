@@ -11,7 +11,7 @@ const router = express.Router({ mergeParams: true });
 router
   .route("/")
   .get(getAllComments)
-  .post(protect, restricTo("user"), createComment)
-  .delete(protect, restricTo("user"), deleteComment);
+  .post(protect, createComment)
+  .delete(protect, deleteComment);
 
 module.exports = router;

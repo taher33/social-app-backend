@@ -41,6 +41,7 @@ postSchema.pre("save", function (next) {
 
 postSchema.pre("find", function (next) {
   this.populate("comments");
+  this.populate("user");
   next();
 });
 

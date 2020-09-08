@@ -1,7 +1,8 @@
 class apiFeatures {
-  constructor(query, queryStr) {
+  constructor(query, queryStr, user) {
     this.query = query;
     this.queryStr = queryStr;
+    this.user = user;
   }
 
   filter() {
@@ -12,6 +13,7 @@ class apiFeatures {
     exclude.forEach(el => delete newQuery[el]);
 
     this.query = this.query.find(newQuery);
+
     return this;
   }
 

@@ -44,7 +44,6 @@ exports.signUp = handleasync(async (req, res, next) => {
 
 exports.login = handleasync(async (req, res, next) => {
   const { email, password } = req.body;
-  console.log(req.body);
   if (!email || !password) {
     return next(new appError("plz provide email and password", 400));
   }
@@ -63,7 +62,7 @@ exports.login = handleasync(async (req, res, next) => {
 
 exports.protect = handleasync(async (req, res, next) => {
   let token;
-  console.log(req.cookies.jwt);
+
   if (req.cookies.jwt) {
     token = req.cookies.jwt;
   }
@@ -71,9 +70,7 @@ exports.protect = handleasync(async (req, res, next) => {
     return next(new appError("plz login first", 401));
   }
 
-  jwt.verify(token, process.env.JWT_SECRET, (err, result) => {
-    console.log(result);
-  });
+  jwt.verify(token, process.env.JWT_SECRET, (err, result) => {});
   const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
 
   const frechUser = await User.findById(decoded.id);
@@ -87,6 +84,13 @@ exports.protect = handleasync(async (req, res, next) => {
   req.user = frechUser;
   next();
 });
+
+exports.isLogedIn = (req, res) => {
+  res.json({
+    status: "success",
+    isLogedIn: true,
+  });
+};
 
 exports.restricTo = (...roles) => {
   return (req, res, next) => {

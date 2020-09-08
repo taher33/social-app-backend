@@ -16,6 +16,7 @@ exports.getAllComments = handleasync(async (req, res, next) => {
 
 //create comments
 exports.createComment = handleasync(async (req, res, next) => {
+  console.log(req.body);
   if (!req.body.commenter) req.body.commenter = req.user._id;
   if (!req.body.post) req.body.post = req.params.postId;
   const newComment = await Comment.create({
