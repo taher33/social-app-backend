@@ -11,9 +11,12 @@ class apiFeatures {
     };
     const exclude = ["sort", "page", "limit", "fields"];
     exclude.forEach(el => delete newQuery[el]);
-
+    console.log(newQuery);
     this.query = this.query.find(newQuery);
-
+    if (!newQuery.user && this.user.following.length !== 0) {
+      this.query = this.query.find({ user: this.user.following });
+      console.log(this.user.following !== 0);
+    }
     return this;
   }
 
@@ -32,7 +35,7 @@ class apiFeatures {
       const sortBy = this.queryStr.sort.split(".").join(" ");
       this.query = this.query.sort(sortBy);
     } else {
-      this.query = this.query.sort("likes");
+      this.query = this.query.sort("-createdAt");
     }
     return this;
   }

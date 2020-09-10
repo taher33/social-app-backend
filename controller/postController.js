@@ -3,6 +3,33 @@ const apiFeatures = require("../utils/api-features");
 const Post = require("../models/postsM");
 const appError = require("../utils/appError");
 const { deleteOne } = require("./handlerFactory");
+const multer = require("multer");
+
+const multerStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "imgs/post-imgs");
+  },
+  filename: (req, file, cb) => {
+    //geting the extention : jpeg and such
+    const ext = file.mimetype.split("/")[1];
+    cb(null, `post-${req.user._id}-${Date.now()}.${ext}`);
+  },
+});
+
+const multerFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith("image")) {
+    cb(null, true);
+  } else {
+    cb(new appError("not an image", 400), false);
+  }
+};
+
+const upload = multer({
+  storage: multerStorage,
+  fileFilter: multerFilter,
+});
+
+exports.uploadPostImg = upload.single("picture");
 
 exports.getPosts = handleasync(async (req, res, next) => {
   if (req.query.user === "me") {
@@ -14,7 +41,6 @@ exports.getPosts = handleasync(async (req, res, next) => {
     .sort()
     .pagination();
   const posts = await feature.query;
-  console.log(req.query);
   //for testing
   // const posts = await Post.find();
   res.json({
@@ -26,10 +52,12 @@ exports.getPosts = handleasync(async (req, res, next) => {
 });
 
 exports.createPost = handleasync(async (req, res, next) => {
+  console.log(req.file, "hey");
   const newpost = await Post.create({
     text: req.body.content,
     user: req.user._id,
     page: req.params.pageId,
+    photo: req.file.filename,
   });
 
   res.status(201).json({

@@ -8,6 +8,7 @@ const {
   likePosts,
   deletePosts,
   deletemany,
+  uploadPostImg,
 } = require("../controller/postController");
 
 router.use("/:postId/comment", comment);
@@ -15,7 +16,7 @@ router.use("/:postId/comment", comment);
 router
   .route("/")
   .get(protect, getPosts)
-  .post(protect, createPost)
+  .post(protect, uploadPostImg, createPost)
   .patch(protect, likePosts)
   .delete(deletemany);
 

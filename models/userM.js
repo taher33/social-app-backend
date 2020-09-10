@@ -35,13 +35,14 @@ const userSchema = new mongoose.Schema({
     select: false,
   },
   passwordChanged: Date,
-  images: {
-    type: [String],
+  cover: {
+    type: String,
+    default: "defaults/default-cover.jpg",
   },
   role: { type: String, enum: ["user", "admin", "mod"], default: "user" },
   profileImg: {
     type: String,
-    default: "default-img.png",
+    default: "defaults/default-img.png",
   },
   friends: [mongoose.Types.ObjectId],
   follow: [{ type: mongoose.SchemaTypes.ObjectId, ref: "User" }],

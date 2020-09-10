@@ -6,10 +6,10 @@ const multer = require("multer");
 
 const multerStorage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "profile-imgs");
+    cb(null, "imgs/users");
   },
   filename: (req, file, cb) => {
-    //geting the extention jpeg and such
+    //geting the extention : jpeg and such
     const ext = file.mimetype.split("/")[1];
     cb(null, `user-${req.user._id}-${Date.now()}.${ext}`);
   },
@@ -28,7 +28,10 @@ const upload = multer({
   fileFilter: multerFilter,
 });
 
-exports.uploadUserImgs = upload.single("photo");
+exports.uploadUserImgs = upload.fields([
+  { name: "profileImg", maxCount: 1 },
+  { name: "cover", maxCount: 1 },
+]);
 
 const filterObj = (obj, ...allowed) => {
   const filterdObj = {};

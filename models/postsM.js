@@ -15,7 +15,7 @@ const postSchema = new mongoose.Schema(
     },
     photo: [String],
     slug: String,
-    createdAt: { type: Date },
+    createdAt: { type: Date, default: Date.now() },
     modifiedAt: { type: Date },
     page: { type: mongoose.SchemaTypes.ObjectId, ref: "Page" },
     allowed: Boolean,

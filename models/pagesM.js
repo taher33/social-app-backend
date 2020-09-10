@@ -17,6 +17,7 @@ const pageSchema = new mongoose.Schema(
     ],
 
     coverImg: String,
+    aboute: String,
     followers: [
       {
         type: mongoose.Types.ObjectId,
