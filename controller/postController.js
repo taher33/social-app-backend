@@ -35,6 +35,7 @@ exports.getPosts = handleasync(async (req, res, next) => {
   if (req.query.user === "me") {
     req.query.user = req.user._id;
   }
+
   const feature = new apiFeatures(Post.find(), req.query, req.user)
     .filter()
     .limitFields()
@@ -42,7 +43,7 @@ exports.getPosts = handleasync(async (req, res, next) => {
     .pagination();
   const posts = await feature.query;
   //for testing
-  // const posts = await Post.find();
+
   res.json({
     msg: "this worked",
     res: posts.length,
@@ -52,7 +53,9 @@ exports.getPosts = handleasync(async (req, res, next) => {
 });
 
 exports.createPost = handleasync(async (req, res, next) => {
-  console.log(req.file, "hey");
+  if (req.file === undefined) {
+    req.file = {};
+  }
   const newpost = await Post.create({
     text: req.body.content,
     user: req.user._id,
@@ -76,7 +79,12 @@ exports.likePosts = handleasync(async (req, res, next) => {
 
   if (!post) return next(new appError("post not found", 404));
 
-  post.likes = parseInt(post.likes, 10) + 1;
+  const index = post.likes.indexOf(req.user._id);
+  if (index === -1) {
+    post.likes.push(req.user._id);
+  } else {
+    post.likes.splice(index, 1);
+  }
   post.save({ validateBeforeSave: false });
 
   res.status(201).json({

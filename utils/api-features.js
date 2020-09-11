@@ -15,7 +15,6 @@ class apiFeatures {
     this.query = this.query.find(newQuery);
     if (!newQuery.user && this.user.following.length !== 0) {
       this.query = this.query.find({ user: this.user.following });
-      console.log(this.user.following !== 0);
     }
     return this;
   }

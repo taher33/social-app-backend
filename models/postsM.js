@@ -9,16 +9,12 @@ const postSchema = new mongoose.Schema(
     },
 
     user: { type: mongoose.SchemaTypes.ObjectId, required: true, ref: "User" },
-    likes: {
-      type: Number,
-      default: 0,
-    },
-    photo: [String],
+    likes: [{ type: mongoose.SchemaTypes.ObjectId, ref: "User" }],
+    photo: { type: String, default: "" },
     slug: String,
     createdAt: { type: Date, default: Date.now() },
     modifiedAt: { type: Date },
     page: { type: mongoose.SchemaTypes.ObjectId, ref: "Page" },
-    allowed: Boolean,
   },
   {
     toJSON: {
@@ -45,6 +41,14 @@ postSchema.pre("find", function (next) {
   next();
 });
 
+// postSchema.methods.checkLikes = function (id) {
+//   if (this.likes.includes(id)) {
+//     this.liked = true;
+//   } else {
+//     this.liked = false;
+//   }
+// };
+
 postSchema.virtual("comments", {
   ref: "Comment",
   foreignField: "post",
@@ -55,10 +59,10 @@ postSchema.virtual("likesInK").get(function () {
   return this.likes / 1000 + "k";
 });
 
-postSchema.methods.allow = function (id) {
-  if (id === this.user) this.allowed = true;
-  else this.allowed = false;
-  console.log(this);
-};
+// postSchema.methods.allow = function (id) {
+//   if (id === this.user) this.allowed = true;
+//   else this.allowed = false;
+//   console.log(this);
+// };
 
 module.exports = mongoose.model("Post", postSchema);

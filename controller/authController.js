@@ -89,6 +89,7 @@ exports.isLogedIn = (req, res) => {
   res.json({
     status: "success",
     isLogedIn: true,
+    user: req.user,
   });
 };
 
