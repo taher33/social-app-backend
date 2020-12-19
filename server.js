@@ -12,7 +12,7 @@ const mongoose = require("mongoose");
 const PORT = process.env.PORT || 5000;
 
 mongoose.connect(
-  `mongodb+srv://taher:${process.env.MONGO_DB_PASSWORD}@pacebook-f21hd.mongodb.net/${process.env.MONGO_DB_NAME}?retryWrites=true&w=majority`,
+  `mongodb+srv://taher:${process.env.MONGO_DB_PASSWORD}@pacebook.f21hd.mongodb.net/${process.env.MONGO_DB_PASSWORD}?retryWrites=true&w=majority`,
   {
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -23,9 +23,10 @@ mongoose.connect(
   }
 );
 
-const server = app.listen(PORT, () =>
-  console.log("started server on port : " + PORT)
-);
+const server = app.listen(PORT, () => {
+  console.log("started server on port : " + PORT);
+  console.log(process.env.MONGO_DB_PASSWORD);
+});
 
 process.on("unhandledRejection", err => {
   console.log(err.name, err.message);

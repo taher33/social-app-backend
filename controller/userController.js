@@ -47,8 +47,8 @@ exports.updateMe = handleasync(async (req, res, next) => {
   }
   const filterdBody = filterObj(req.body, "name", "email");
 
-  if (req.file) filterdBody.profileImg = req.file.filename;
-
+  if (req.files) filterdBody.profileImg = req.files.profileImg[0].filename;
+  // console.log(filterdBody);
   const user = await User.findByIdAndUpdate(req.user._id, filterdBody, {
     new: true,
     runValidators: true,
@@ -79,25 +79,38 @@ exports.getAllUsers = handleasync(async (req, res, next) => {
   });
 });
 
-exports.addFriends = handleasync(async (req, res, next) => {
+exports.follow = handleasync(async (req, res, next) => {
   if (!req.body.email) return next(new appError("email required"), 400);
 
   const user = await User.findOne({ email: req.body.email });
 
   if (!user) return next(new appError("user does not exist", 404));
+  if (req.user.People_I_follow.includes(user._id)) {
+    //removing user id from clients following list
+    req.user.People_I_follow.splice(
+      req.user.People_I_follow.indexOf(user._id),
+      1
+    );
+    //removing client id from users followers list
+    user.People_that_follow_me.splice(
+      user.People_that_follow_me.indexOf(req.user._id),
+      1
+    );
+    user.save({ validateBeforeSave: false });
+    req.user.save({ validateBeforeSave: false });
 
-  if (user.friends.includes(req.user._id))
-    return next(new appError("u are already friends", 400));
+    return res.status(200).json({
+      status: "success",
+    });
+  }
 
-  user.friends.push(req.user._id);
-  req.user.friends.push(user._id);
-  user.save();
-  req.user.save();
+  user.People_that_follow_me.push(req.user._id);
+  req.user.People_I_follow.push(user._id);
+  user.save({ validateBeforeSave: false });
+  req.user.save({ validateBeforeSave: false });
 
-  res.status(201).json({
+  res.status(200).json({
     status: "success",
-    friends: user.friends,
-    op: req.user,
   });
 });
 // did not add the end point for it yet
@@ -125,3 +138,27 @@ exports.getAllFriends = handleasync(async (req, res, next) => {
     friends,
   });
 });
+
+exports.getOneUser = handleasync(async (req, res, next) => {
+  let id = req.params.userId;
+  console.log(id);
+  if (id === "me") {
+    id = req.user._id;
+  }
+
+  const user = await User.findById(id);
+  if (!user) {
+    return next(new appError("user does nnot exist", 404));
+  }
+  res.json({
+    status: "success",
+    user,
+  });
+});
+
+exports.delete_everything = async (req, res, next) => {
+  await User.deleteMany();
+  res.json({
+    status: "success",
+  });
+};

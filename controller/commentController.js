@@ -14,7 +14,7 @@ exports.getAllComments = handleasync(async (req, res, next) => {
   });
 });
 
-//create comments
+//create comments hehehheheheheh
 exports.createComment = handleasync(async (req, res, next) => {
   console.log(req.body);
   if (!req.body.commenter) req.body.commenter = req.user._id;

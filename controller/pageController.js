@@ -4,6 +4,7 @@ const Post = require("../models/postsM");
 const appError = require("../utils/appError");
 
 exports.createPages = handleasync(async (req, res, next) => {
+  console.log(req.body);
   const newpage = await Page.create({
     name: req.body.name,
     admins: req.user._id,
@@ -75,8 +76,8 @@ exports.checkIfAdmin = async (req, res, next) => {
 };
 
 exports.deletePage = handleasync(async (req, res, next) => {
-  Page.deleteOne({ _id: req.params.pageId });
-  res.status(204).json({
+  await Page.deleteOne({ _id: req.params.pageId });
+  res.status(200).json({
     status: "success",
     msg: "page is deleted",
   });

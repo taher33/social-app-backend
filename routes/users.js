@@ -6,9 +6,11 @@ const {
   updateMe,
   deleteMe,
   getAllUsers,
-  addFriends,
   getAllFriends,
   uploadUserImgs,
+  follow,
+  getOneUser,
+  delete_everything,
 } = require("../controller/userController");
 const { deleteOne } = require("../controller/handlerFactory");
 
@@ -17,18 +19,25 @@ router.post("/login", auth.login);
 router.route("/").get(getAllUsers).post(auth.signUp);
 
 router.post("/forgotPassword", auth.forgotPass);
+
 router.patch("/resetPassword/:token", auth.resetPassword);
 
 router.patch("/updatePassword", auth.protect, auth.updatePassword);
 
 router.patch("/updateMe", auth.protect, uploadUserImgs, updateMe);
 
+router.get("/one/:userId", auth.protect, getOneUser);
+
 router.delete("/deleteMe", auth.protect, deleteMe);
 
+router.delete("/logout", auth.protect, auth.logout);
+
+router.delete("/deleteAll", delete_everything);
+
 router
-  .route("/friend")
+  .route("/follow")
   .get(auth.protect, getAllFriends)
-  .patch(auth.protect, addFriends);
+  .patch(auth.protect, follow);
 
 router.delete("/:id", auth.protect, auth.restricTo("admin"), deleteOne(User));
 

@@ -21,6 +21,6 @@ router
   .get(getOnePage)
   .post(checkIfAdmin, restrictPagePosters, createPost)
   .patch(followPages)
-  .delete(checkIfAdmin, restrictPagePosters, deletePage);
+  .delete(deletePage);
 
 module.exports = router;

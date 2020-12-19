@@ -6,7 +6,6 @@ const crypto = require("crypto");
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
-    unique: [true, "name already taken"],
     required: [true, "a name is required"],
     minlength: 3,
     maxlength: 15,
@@ -14,7 +13,7 @@ const userSchema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
-    unique: true,
+    unique: [true, "email already taken"],
     lowercase: true,
     validate: [validate.isEmail, "please provide valid email"],
   },
@@ -37,16 +36,15 @@ const userSchema = new mongoose.Schema({
   passwordChanged: Date,
   cover: {
     type: String,
-    default: "defaults/default-cover.jpg",
+    default: "default-cover.jpg",
   },
   role: { type: String, enum: ["user", "admin", "mod"], default: "user" },
   profileImg: {
     type: String,
-    default: "defaults/default-img.png",
+    default: "default-img.png",
   },
-  friends: [mongoose.Types.ObjectId],
-  follow: [{ type: mongoose.SchemaTypes.ObjectId, ref: "User" }],
-  following: [{ type: mongoose.SchemaTypes.ObjectId, ref: "User" }],
+  People_I_follow: [{ type: mongoose.SchemaTypes.ObjectId, ref: "User" }],
+  People_that_follow_me: [{ type: mongoose.SchemaTypes.ObjectId, ref: "User" }],
   createdAt: {
     type: Date,
   },

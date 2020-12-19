@@ -16,9 +16,9 @@ const pageSchema = new mongoose.Schema(
       },
     ],
 
-    coverImg: String,
+    coverImg: { type: String, default: "default-cover.jpg" },
     aboute: String,
-    followers: [
+    People_that_follow_me: [
       {
         type: mongoose.Types.ObjectId,
         ref: "User",

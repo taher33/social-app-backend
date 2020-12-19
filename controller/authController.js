@@ -15,18 +15,19 @@ const signToken = id => {
 
 const createSendToken = (user, statusCode, res) => {
   const token = signToken(user._id);
+  console.log(token);
   const cookieOptions = {
-    // expires: new Date(Date.now() + process.env.JWT_COOKIE_IN * 3600),
-    maxAge: 999999999999,
+    expires: new Date(Date.now() + process.env.JWT_COOKIE_IN * 3600 * 1000),
+    maxAge: process.env.JWT_COOKIE_IN * 3600 * 1000,
     httpOnly: true,
   };
   if (process.env.NODE_ENV === "prod") cookieOptions.secure = true;
-  console.log(cookieOptions);
 
   res.cookie("jwt", token, cookieOptions);
 
   res.status(200).json({
     status: "success",
+    user,
   });
 };
 
@@ -37,6 +38,8 @@ exports.signUp = handleasync(async (req, res, next) => {
     password: req.body.password,
     passwordConfirm: req.body.passwordConf,
     // role: req.body.role,
+  }).catch(err => {
+    return next(new appError(err, 403));
   });
 
   createSendToken(newUser, 200, res);
@@ -86,6 +89,7 @@ exports.protect = handleasync(async (req, res, next) => {
 });
 
 exports.isLogedIn = (req, res) => {
+  console.log("is loged in ");
   res.json({
     status: "success",
     isLogedIn: true,
@@ -174,3 +178,10 @@ exports.updatePassword = async (req, res, next) => {
 
   createSendToken(user, 201, res);
 };
+
+exports.logout = handleasync(async (req, res, next) => {
+  res.clearCookie("jwt");
+  res.json({
+    status: "success",
+  });
+});
