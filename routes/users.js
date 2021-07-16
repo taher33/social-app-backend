@@ -15,7 +15,9 @@ const {
 const { deleteOne } = require("../controller/handlerFactory");
 
 router.get("/checkLogin", auth.protect, auth.isLogedIn);
+
 router.post("/login", auth.login);
+
 router.route("/").get(getAllUsers).post(auth.signUp);
 
 router.post("/forgotPassword", auth.forgotPass);

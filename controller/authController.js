@@ -7,15 +7,14 @@ const appError = require("../utils/appError");
 const { checkPassword } = require("../utils/comparePass");
 const sendMail = require("../utils/email");
 
-const signToken = id => {
+const signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN,
+    expiresIn: process.env.JWT_EXPIRES_IN * 3600 * 1000,
   });
 };
 
 const createSendToken = (user, statusCode, res) => {
   const token = signToken(user._id);
-  console.log(token);
   const cookieOptions = {
     expires: new Date(Date.now() + process.env.JWT_COOKIE_IN * 3600 * 1000),
     maxAge: process.env.JWT_COOKIE_IN * 3600 * 1000,
@@ -24,7 +23,10 @@ const createSendToken = (user, statusCode, res) => {
   if (process.env.NODE_ENV === "prod") cookieOptions.secure = true;
 
   res.cookie("jwt", token, cookieOptions);
-
+  if (process.env.NODE_ENV === "prod") {
+    cookieOptions.secure = true;
+    cookieOptions.sameSite = "none";
+  }
   res.status(200).json({
     status: "success",
     user,
@@ -37,9 +39,6 @@ exports.signUp = handleasync(async (req, res, next) => {
     email: req.body.email,
     password: req.body.password,
     passwordConfirm: req.body.passwordConf,
-    // role: req.body.role,
-  }).catch(err => {
-    return next(new appError(err, 403));
   });
 
   createSendToken(newUser, 200, res);

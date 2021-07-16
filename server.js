@@ -1,4 +1,4 @@
-process.on("uncaughtException", err => {
+process.on("uncaughtException", (err) => {
   console.log(err);
 
   process.exit(1);
@@ -25,10 +25,9 @@ mongoose.connect(
 
 const server = app.listen(PORT, () => {
   console.log("started server on port : " + PORT);
-  console.log(process.env.MONGO_DB_PASSWORD);
 });
 
-process.on("unhandledRejection", err => {
+process.on("unhandledRejection", (err) => {
   console.log(err.name, err.message);
   server.close(() => {
     process.exit(1);

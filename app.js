@@ -16,10 +16,19 @@ const pages = require("./routes/pages");
 const cookieParser = require("cookie-parser");
 
 const app = express();
+const whiteList = ["http://localhost:3000"];
+
 app.use(
   cors({
     credentials: true,
-    origin: "*",
+
+    origin: function (origin, callback) {
+      if (whiteList.indexOf(origin) !== -1 || !origin) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
   })
 );
 // security headers against noSQL injection
@@ -57,6 +66,9 @@ app.use(bodyParser.json());
 // static serving
 app.use(express.static(path.join(__dirname, "imgs")));
 //my routes
+app.get("/", (req, res) => {
+  res.send("hey there");
+});
 app.use("/posts", posts);
 app.use("/pages", pages);
 app.use("/users", users);
