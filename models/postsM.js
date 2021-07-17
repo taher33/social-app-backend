@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const slugify = require("slugify");
 
 const postSchema = new mongoose.Schema(
   {
@@ -11,10 +10,9 @@ const postSchema = new mongoose.Schema(
     user: { type: mongoose.SchemaTypes.ObjectId, required: true, ref: "User" },
     likes: [{ type: mongoose.SchemaTypes.ObjectId, ref: "User" }],
     photo: { type: String, default: "" },
-    slug: String,
+
     createdAt: { type: Date, default: Date.now() },
     modifiedAt: { type: Date },
-    page: { type: mongoose.SchemaTypes.ObjectId, ref: "Page" },
   },
   {
     toJSON: {
@@ -27,11 +25,7 @@ const postSchema = new mongoose.Schema(
 );
 
 postSchema.pre("save", function (next) {
-  // this.slug = slugify(this.user, {
-  //   lower: true,
-  // });
-  if (this.isNew) this.createdAt = Date.now();
-  else this.modifiedAt = Date.now();
+  this.modifiedAt = Date.now();
   next();
 });
 

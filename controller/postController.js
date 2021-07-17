@@ -4,10 +4,24 @@ const Post = require("../models/postsM");
 const appError = require("../utils/appError");
 const { deleteOne } = require("./handlerFactory");
 const multer = require("multer");
+const fs = require("fs");
+
+exports.createDirectory = async (req, res, next) => {
+  try {
+    let DirectoryExist = fs.existsSync("./imgs");
+    if (!DirectoryExist) {
+      fs.mkdirSync("./imgs");
+    }
+
+    next();
+  } catch (error) {
+    next(new appError(error.message, 500));
+  }
+};
 
 const multerStorage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "imgs/post-imgs");
+    cb(null, "imgs");
   },
   filename: (req, file, cb) => {
     //geting the extention : jpeg and such
@@ -32,10 +46,6 @@ const upload = multer({
 exports.uploadPostImg = upload.single("picture");
 
 exports.getPosts = handleasync(async (req, res, next) => {
-  if (req.query.user === "me") {
-    req.query.user = req.user._id;
-  }
-
   const feature = new apiFeatures(Post.find(), req.query, req.user)
     .filter()
     .limitFields()
@@ -45,10 +55,8 @@ exports.getPosts = handleasync(async (req, res, next) => {
   //for testing
 
   res.json({
-    msg: "this worked",
     res: posts.length,
     posts,
-    user: req.user,
   });
 });
 
@@ -59,7 +67,6 @@ exports.createPost = handleasync(async (req, res, next) => {
   const newpost = await Post.create({
     text: req.body.content,
     user: req.user._id,
-    page: req.params.pageId,
     photo: req.file.filename,
   });
 
