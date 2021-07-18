@@ -69,10 +69,11 @@ exports.createPost = handleasync(async (req, res, next) => {
     user: req.user._id,
     photo: req.file.filename,
   });
-
+  const post = await Post.findById(newpost._id).populate("user");
+  console.log(post);
   res.status(201).json({
     status: "success",
-    newpost,
+    post,
   });
 });
 // did not add the end point yet

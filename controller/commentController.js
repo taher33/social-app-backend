@@ -3,9 +3,7 @@ const handleasync = require("../utils/handleAsync");
 const { deleteOne } = require("./handlerFactory");
 
 exports.getAllComments = handleasync(async (req, res, next) => {
-  let filter = {};
-  if (req.params.postId) filter = { tour: req.params.postId };
-  const comments = await Comment.find(filter);
+  const comments = await Comment.find({ post: req.params.postId });
 
   res.json({
     status: "success",
@@ -16,13 +14,10 @@ exports.getAllComments = handleasync(async (req, res, next) => {
 
 //create comments hehehheheheheh
 exports.createComment = handleasync(async (req, res, next) => {
-  console.log(req.body);
-  if (!req.body.commenter) req.body.commenter = req.user._id;
-  if (!req.body.post) req.body.post = req.params.postId;
   const newComment = await Comment.create({
     text: req.body.text,
-    user: req.body.commenter,
-    post: req.body.post,
+    user: req.user._id,
+    post: req.params.postId,
   });
 
   res.status(201).json({
