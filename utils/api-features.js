@@ -10,7 +10,7 @@ class apiFeatures {
       ...this.queryStr,
     };
     const exclude = ["sort", "page", "limit", "fields"];
-    exclude.forEach(el => delete newQuery[el]);
+    exclude.forEach((el) => delete newQuery[el]);
     this.query = this.query.find(newQuery);
     // if (!newQuery.user && this.user.People_I_follow.length !== 0) {
     //   this.query = this.query.find({ user: this.user.following });
@@ -44,7 +44,7 @@ class apiFeatures {
 
     let skip = (page - 1) * limit;
 
-    this.query = this.query.skip(skip).limit(limit);
+    this.query = this.query.skip(skip).limit(limit + 1);
     return this;
   }
 }

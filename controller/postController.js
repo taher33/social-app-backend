@@ -52,11 +52,19 @@ exports.getPosts = handleasync(async (req, res, next) => {
     .sort()
     .pagination();
   const posts = await feature.query;
-  //for testing
+
+  //haseMore for pagination in the frontend
+  let haseMore = false;
+  if (posts.length === 11) {
+    haseMore = true;
+
+    posts.pop();
+  }
 
   res.json({
     res: posts.length,
     posts,
+    haseMore,
   });
 });
 
@@ -70,7 +78,7 @@ exports.createPost = handleasync(async (req, res, next) => {
     photo: req.file.filename,
   });
   const post = await Post.findById(newpost._id).populate("user");
-  console.log(post);
+
   res.status(201).json({
     status: "success",
     post,

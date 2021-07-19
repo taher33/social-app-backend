@@ -35,7 +35,7 @@ exports.uploadUserImgs = upload.fields([
 
 const filterObj = (obj, ...allowed) => {
   const filterdObj = {};
-  Object.keys(obj).forEach(el => {
+  Object.keys(obj).forEach((el) => {
     if (allowed.includes(el)) filterdObj[el] = obj[el];
   });
   return filterdObj;
@@ -142,10 +142,6 @@ exports.getAllFriends = handleasync(async (req, res, next) => {
 exports.getOneUser = handleasync(async (req, res, next) => {
   let id = req.params.userId;
   console.log(id);
-  if (id === "me") {
-    id = req.user._id;
-  }
-
   const user = await User.findById(id);
   if (!user) {
     return next(new appError("user does nnot exist", 404));
