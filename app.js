@@ -16,7 +16,10 @@ const pages = require("./routes/pages");
 const cookieParser = require("cookie-parser");
 
 const app = express();
-const whiteList = ["http://localhost:3000", "social-media-taher.vercel.app"];
+const whiteList = [
+  "http://localhost:3000",
+  "https://social-media-taher.vercel.app",
+];
 
 app.use(
   cors({
