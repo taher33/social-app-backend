@@ -20,13 +20,12 @@ const createSendToken = (user, statusCode, res) => {
     maxAge: process.env.JWT_COOKIE_IN * 3600 * 1000,
     httpOnly: true,
   };
-  if (process.env.NODE_ENV === "prod") cookieOptions.secure = true;
-
-  res.cookie("jwt", token, cookieOptions);
   if (process.env.NODE_ENV === "prod") {
     cookieOptions.secure = true;
     cookieOptions.sameSite = "none";
   }
+
+  res.cookie("jwt", token, cookieOptions);
   res.status(200).json({
     status: "success",
     user,
